@@ -30,7 +30,7 @@ unit_test:
     - php artisan migrate --force
     - vendor/bin/phpunit
   only:
-    - main
+    - master
 
 # ================================
 # STAGE 2: DEPLOY
