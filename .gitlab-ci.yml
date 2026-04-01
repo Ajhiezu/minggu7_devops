@@ -1,48 +1,45 @@
 default:
   image: php:8.4-cli
-  services:
-    - mysql:8.0
 
 variables:
-  MYSQL_DATABASE: laravel
-  MYSQL_ROOT_PASSWORD: secret
-  DB_HOST: mysql
-  DB_USERNAME: root
-  DB_PASSWORD: secret
+  DB_HOST: "127.0.0.1"
+  DB_DATABASE: "laravel"
+  DB_USERNAME: "laravel"
+  DB_PASSWORD: "$Febri123"
 
 stages:
   - test
   - deploy
 
-# ================================
-# STAGE 1: TEST
-# ================================
+# ==============================
+# STAGE 1 : TEST
+# ==============================
 unit_test:
   stage: test
   before_script:
-    - apt-get update -qq && apt-get install -qq git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev
+    - apt-get update -qq
+    - apt-get install -qq git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev
     - docker-php-ext-install pdo_mysql mbstring zip
     - curl --silent --show-error "https://getcomposer.org/installer" | php -- --install-dir=/usr/local/bin --filename=composer
   script:
     - cp .env.example .env
     - composer install --no-interaction --prefer-dist
     - php artisan key:generate
-    - php artisan migrate --force
     - vendor/bin/phpunit
   only:
     - master
 
-# ================================
-# STAGE 2: DEPLOY
-# ================================
+# ==============================
+# STAGE 2 : DEPLOY
+# ==============================
 deploy_production:
   stage: deploy
   before_script:
-    - apt-get update -qq && apt-get install -qq openssh-client rsync
+    - apt-get update -qq
+    - apt-get install -qq openssh-client git curl zip unzip
     - curl --silent --show-error "https://getcomposer.org/installer" | php -- --install-dir=/usr/local/bin --filename=composer
-    - composer global require "laravel/envoy=~2.0"
+    - composer global require "laravel/envoy=~2.12.1"
     - export PATH="/root/.config/composer/vendor/bin:$PATH"
-    - which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh

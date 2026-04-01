@@ -1,7 +1,7 @@
 @servers(['web' => 'deployer@172.29.18.240'])
 
 @setup
-    $repository = 'git@gitlab.com:napoleon/minggu7.git';
+    $repository = 'http://napoleon:$Febri123@localhost:8000/napoleon/minggu7.git';
     $releases_dir = '/var/www/app/releases';
     $app_dir = '/var/www/app';
     $release = date('YmdHis');
