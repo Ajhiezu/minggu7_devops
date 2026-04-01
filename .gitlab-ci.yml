@@ -23,7 +23,7 @@ deploy_production:
   script:
     - curl -sS https://getcomposer.org/installer | php
     - php composer.phar global require laravel/envoy
-    - export PATH="$HOME/.composer/vendor/bin:$PATH"
+    - export PATH="/home/gitlab-runner/.config/composer/vendor/bin:$PATH"
     - envoy run deploy --commit="$CI_COMMIT_SHA"
   environment:
     name: production
