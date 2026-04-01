@@ -1,25 +1,16 @@
 default:
   image: php:8.4-cli
 
-variables:
-  DB_HOST: "127.0.0.1"
-  DB_DATABASE: "laravel"
-  DB_USERNAME: "laravel"
-  DB_PASSWORD: "$Febri123"
-
 stages:
   - test
   - deploy
 
-# ==============================
-# STAGE 1 : TEST
-# ==============================
 unit_test:
   stage: test
   before_script:
-    - apt-get update -qq
-    - apt-get install -qq git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev
-    - docker-php-ext-install pdo_mysql mbstring zip
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev
+    - sudo docker-php-ext-install pdo_mysql mbstring zip
     - curl --silent --show-error "https://getcomposer.org/installer" | php -- --install-dir=/usr/local/bin --filename=composer
   script:
     - cp .env.example .env
@@ -29,17 +20,14 @@ unit_test:
   only:
     - master
 
-# ==============================
-# STAGE 2 : DEPLOY
-# ==============================
 deploy_production:
   stage: deploy
   before_script:
-    - apt-get update -qq
-    - apt-get install -qq openssh-client git curl zip unzip
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq openssh-client git curl zip unzip
     - curl --silent --show-error "https://getcomposer.org/installer" | php -- --install-dir=/usr/local/bin --filename=composer
     - composer global require "laravel/envoy=~2.12.1"
-    - export PATH="/root/.config/composer/vendor/bin:$PATH"
+    - export PATH="$HOME/.config/composer/vendor/bin:$PATH"
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
@@ -49,7 +37,7 @@ deploy_production:
     - envoy run deploy --commit="$CI_COMMIT_SHA"
   environment:
     name: production
-    url: http://172.29.18.240
+    url: http://127.0.0.1
   when: manual
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
