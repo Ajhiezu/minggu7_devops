@@ -20,10 +20,8 @@ deploy_production:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-  script:
-    - curl -sS https://getcomposer.org/installer | php
-    - php composer.phar global require laravel/envoy
     - export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+  script:
     - envoy run deploy --commit="$CI_COMMIT_SHA"
   environment:
     name: production
