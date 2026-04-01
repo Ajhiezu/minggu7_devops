@@ -9,8 +9,7 @@ unit_test:
   stage: test
   before_script:
     - sudo apt-get update -qq
-    - sudo apt-get install -qq git curl zip unzip libpng-dev libonig-dev libxml2-dev libzip-dev
-    - sudo docker-php-ext-install pdo_mysql mbstring zip
+    - sudo apt-get install -qq php php-cli php-mbstring php-xml php-zip php-mysql php-curl php-tokenizer unzip curl git
     - curl --silent --show-error "https://getcomposer.org/installer" | php -- --install-dir=/usr/local/bin --filename=composer
   script:
     - cp .env.example .env
