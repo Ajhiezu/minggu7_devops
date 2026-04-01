@@ -1,16 +1,9 @@
-default:
-  image: php:8.4-cli
-
 stages:
   - test
   - deploy
 
 unit_test:
   stage: test
-  before_script:
-    - sudo apt-get update -qq
-    - sudo apt-get install -qq php php-cli php-mbstring php-xml php-zip php-mysql php-curl php-tokenizer unzip curl git
-    - curl --silent --show-error "https://getcomposer.org/installer" | php -- --install-dir=/usr/local/bin --filename=composer
   script:
     - cp .env.example .env
     - composer install --no-interaction --prefer-dist
@@ -22,11 +15,6 @@ unit_test:
 deploy_production:
   stage: deploy
   before_script:
-    - sudo apt-get update -qq
-    - sudo apt-get install -qq openssh-client git curl zip unzip
-    - curl --silent --show-error "https://getcomposer.org/installer" | php -- --install-dir=/usr/local/bin --filename=composer
-    - composer global require "laravel/envoy=~2.12.1"
-    - export PATH="$HOME/.config/composer/vendor/bin:$PATH"
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
