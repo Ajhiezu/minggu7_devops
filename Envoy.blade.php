@@ -1,7 +1,7 @@
 @servers(['web' => 'deployer@172.29.18.240'])
 
 @setup
-    $repository = 'http://napoleon:$Febri123@localhost:8000/napoleon/minggu7.git';
+    $repository = 'http://napoleon:glpat-0LgnLotL1wg6l4zPSpnI_G86MQp1OjEH.01.0w1celchb@127.0.0.1:8000/napoleon/minggu7.git';
     $releases_dir = '/var/www/app/releases';
     $app_dir = '/var/www/app';
     $release = date('YmdHis');
