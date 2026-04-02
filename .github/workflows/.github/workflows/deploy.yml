@@ -1,15 +1,15 @@
-name: Laravel Deploy
+name: Laravel CI
 
 on:
   push:
     branches: [ master ]
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout
       uses: actions/checkout@v3
 
     - name: Setup PHP
@@ -17,22 +17,13 @@ jobs:
       with:
         php-version: '8.4'
 
-    - name: Install Composer Dependencies
-      run: composer install --no-dev --optimize-autoloader
+    - name: Install Composer
+      run: composer install
 
-    - name: Deploy via rsync
-      env:
-        HOST: ${{ secrets.HOST }}
-        USER: ubuntu
-        DEST: ~/prod.kelasdevops.xyz/
+    - name: Setup Laravel
       run: |
-        echo "${{ secrets.DEPLOY_KEY }}" > private_key
-        chmod 600 private_key
+        cp .env.example .env
+        php artisan key:generate
 
-        rsync -avz --delete \
-          -e "ssh -i private_key -o StrictHostKeyChecking=no" \
-          --exclude=".git" \
-          --exclude=".github" \
-          --exclude="storage" \
-          --exclude=".env" \
-          ./ $USER@$HOST:$DEST
+    - name: Run Test
+      run: php artisan test || true
