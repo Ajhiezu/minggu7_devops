@@ -1,0 +1,38 @@
+name: Laravel Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+
+    - name: Install Composer Dependencies
+      run: composer install --no-dev --optimize-autoloader
+
+    - name: Deploy via rsync
+      env:
+        HOST: ${{ secrets.HOST }}
+        USER: ubuntu
+        DEST: ~/prod.kelasdevops.xyz/
+      run: |
+        echo "${{ secrets.DEPLOY_KEY }}" > private_key
+        chmod 600 private_key
+
+        rsync -avz --delete \
+          -e "ssh -i private_key -o StrictHostKeyChecking=no" \
+          --exclude=".git" \
+          --exclude=".github" \
+          --exclude="storage" \
+          --exclude=".env" \
+          ./ $USER@$HOST:$DEST
